@@ -1,0 +1,6 @@
+{
+  "name": "VISIONX - AI Video Understanding System",
+  "description": "Simple AI Video Intelligence system using Google Gemini to summarize videos, generate timestamped event timelines, and chat with video context.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VISIONX - AI Video Understanding System</title>
+  <meta name="description" content="AI Video Intelligence system using Google Gemini to summarize videos, generate timestamped event timelines, and chat with video context." />
+  <meta property="og:title" content="VISIONX - AI Video Understanding System" />
+  <meta property="og:description" content="AI Video Intelligence system using Google Gemini to summarize videos, generate timestamped event timelines, and chat with video context." />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo-group">
+        <div class="logo-badge">VX</div>
+        <div class="logo-title">
+          <h1>VISIONX</h1>
+          <div class="logo-subtitle">AI Video Intelligence</div>
+        </div>
+      </div>
+      <div class="status-badge" id="sysStatusBadge">
+        <span class="status-dot" id="sysStatusDot"></span>
+        <span id="sysStatusText">System Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <!-- Top Action Bar -->
+    <section class="control-bar">
+      <div class="upload-section">
+        <div class="file-input-wrapper">
+          <button type="button" class="btn btn-secondary" id="chooseFileBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Choose Video
+          </button>
+          <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime,video/x-msvideo,.mp4,.webm,.mov,.avi" />
+        </div>
+        <button type="button" class="btn btn-secondary" id="sampleVideoBtn" title="Load built-in test video">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+          Load Demo Video
+        </button>
+        <span class="file-info" id="fileNameDisplay">No video selected (MP4, WebM, MOV)</span>
+      </div>
+
+      <div>
+        <button type="button" class="btn btn-primary" id="analyzeBtn" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Analyze Video
+        </button>
+      </div>
+    </section>
+
+    <!-- Status Banner for alerts and progress -->
+    <div class="status-banner" id="statusBanner">
+      <div id="statusText">Status messages appear here</div>
+    </div>
+
+    <!-- Video + Summary Section -->
+    <section class="main-grid">
+      <!-- Left: Video Player -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+              <line x1="7" y1="2" x2="7" y2="22"></line>
+              <line x1="17" y1="2" x2="17" y2="22"></line>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <line x1="2" y1="7" x2="7" y2="7"></line>
+              <line x1="2" y1="17" x2="7" y2="17"></line>
+              <line x1="17" y1="17" x2="22" y2="17"></line>
+              <line x1="17" y1="7" x2="22" y2="7"></line>
+            </svg>
+            Video Player
+          </div>
+          <div class="current-time-badge">
+            <span id="videoCurrentTimeDisplay">00:00</span>
+            <span id="videoDurationDisplay" style="color:var(--text-faint);"> / 00:00</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="video-wrapper">
+            <div class="video-placeholder" id="videoPlaceholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <div>Upload an MP4 video above to preview and analyze</div>
+            </div>
+            <video id="videoPlayer" controls playsinline style="display: none;"></video>
+          </div>
+          <div class="video-bar">
+            <span>Click any timestamp to seek to that moment</span>
+            <span style="font-size: 0.8rem; color: var(--cyan-accent);">HTML5 Player Sync</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Video Summary -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Video Summary
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="summary-content" id="summaryContent">
+            <span class="empty-state">Select a video and click "Analyze Video" to generate an AI summary.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Timeline Section -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Video Timeline
+        </div>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Chronological Observed Events</span>
+      </div>
+      <div class="card-body">
+        <div class="timeline-section" id="timelineList">
+          <div class="empty-state">Timestamped events detected by Gemini will appear here.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chatbot Section -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Ask About This Video
+        </div>
+        <span style="font-size: 0.8rem; color: var(--cyan-accent);">Real-time Video QA with Timestamps</span>
+      </div>
+
+      <div class="chat-container">
+        <!-- Messages -->
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble assistant">
+            <div class="chat-author">VISIONX AI</div>
+            <div class="chat-text">
+              Welcome to VISIONX. Upload a video above to begin. Once analyzed, you can ask questions like "When did the person run?", "Did anyone fall?", or "What happened around 00:50?" — all answers include exact clickable timestamps.
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Questions Chips -->
+        <div class="quick-questions">
+          <span style="font-size: 0.75rem; color: var(--text-faint); margin-right: 0.25rem;">Quick questions:</span>
+          <button type="button" class="quick-btn" data-q="When did the person enter?">When did the person enter?</button>
+          <button type="button" class="quick-btn" data-q="When did the person run?">When did the person run?</button>
+          <button type="button" class="quick-btn" data-q="Did anyone fall?">Did anyone fall?</button>
+          <button type="button" class="quick-btn" data-q="What happened around 00:50?">What happened around 00:50?</button>
+          <button type="button" class="quick-btn" data-q="Was there any unusual activity?">Any unusual activity?</button>
+          <button type="button" class="quick-btn" data-q="Give me a full summary of events.">Give me the summary</button>
+        </div>
+
+        <!-- Input Row -->
+        <div class="chat-input-row">
+          <input
+            type="text"
+            id="chatInput"
+            class="chat-input"
+            placeholder="Type your question about the video (e.g. 'When did the person run?')..."
+            autocomplete="off"
+          />
+          <button type="button" class="btn btn-primary" id="sendChatBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Ask
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    VISIONX &bull; AI Video Understanding powered by Google Gemini Video API
+  </footer>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
